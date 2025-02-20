@@ -1,9 +1,11 @@
 <?php
 session_start();
 if (!isset($_SESSION['username'])) {
-    header("Location: index.html");
+    header("Location: ../../index.php");
     exit();
 }
+
+include "../../config/database.php"; 
 ?>
 
 <!DOCTYPE html>
@@ -14,10 +16,10 @@ if (!isset($_SESSION['username'])) {
     <title>Welcome</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="d-flex justify-content-center align-items-center vh-100 bg-light">
-    <div class="text-center">
-        <h1>Welcome, <?php echo $_SESSION['username']; ?>!</h1>
-        <a href="logout.php" class="btn btn-danger mt-3">Logout</a>
+<body class="bg-light">
+    <div class="container text-center mt-5">
+        <h1>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h1>
+        <a href="../authentication/logout.php" class="btn btn-danger mt-3">Logout</a>
     </div>
 </body>
 </html>
