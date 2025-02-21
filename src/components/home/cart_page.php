@@ -1,6 +1,6 @@
 <?php
 session_start();
-$cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+$cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : array();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = $_POST['id'];
@@ -82,7 +82,7 @@ $total_price = 0;
             <h4 class="text-end">Total: $<?php echo number_format($total_price, 2); ?></h4>
 
             <div class="d-flex justify-content-between mt-4">
-                <a href="welcome.php" class="btn btn-primary">⬅ Continue Shopping</a>
+                <a href="../welcome.php" class="btn btn-primary">⬅ Continue Shopping</a>
                 <a href="checkout.php" class="btn btn-success">Proceed to Checkout</a>
             </div>
         <?php endif; ?>

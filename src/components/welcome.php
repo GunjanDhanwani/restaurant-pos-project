@@ -50,13 +50,13 @@ $cart_count = isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0;
         <h2 class="text-center">Restaurant Menu</h2>
         <div class="row">
             <?php while ($row = $result->fetch_assoc()): ?>
-                <div class="col-md-4 d-flex align-items-stretch">
-                    <div class="card mb-3">
+                <div class="col-md-4">
+                    <div class="card h-100 d-flex flex-column">
                         <img src="../../assets/images/<?php echo $row['image']; ?>" class="card-img-top" alt="Menu Item">
                         <div class="card-body">
                             <h5 class="card-title"><?php echo $row['name']; ?></h5>
                             <p class="card-text"><?php echo $row['description']; ?></p>
-                            <p class="price">$<?php echo number_format($row['price'], 2); ?></p>
+                            <p class="price">₹<?php echo number_format($row['price'], 2); ?></p>
                         </div>
                         <div class="card-footer text-center">
                             <div class="quantity-controls">

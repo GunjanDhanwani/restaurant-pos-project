@@ -8,18 +8,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $quantity = $_POST['quantity'];
 
     if (!isset($_SESSION['cart'])) {
-        $_SESSION['cart'] = [];
+        $_SESSION['cart'] = array();
     }
 
     // Check if item already in cart
     if (isset($_SESSION['cart'][$id])) {
         $_SESSION['cart'][$id]['quantity'] += $quantity;
     } else {
-        $_SESSION['cart'][$id] = [
+        $_SESSION['cart'][$id] = array(
             'name' => $name,
             'price' => $price,
             'quantity' => $quantity
-        ];
+        );
     }
 
     echo "Item added to cart!";
