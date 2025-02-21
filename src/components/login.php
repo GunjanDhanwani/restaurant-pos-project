@@ -1,10 +1,10 @@
 <?php
 session_start();
-include "../../config/database.php"; // Database connection
+include "database.php"; // Database connection
 
 // If user is already logged in, redirect to welcome page
 if (isset($_SESSION['username'])) {
-    header("Location: ../home/welcome.php");
+    header("Location: welcome.php");
     exit();
 }
 
@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($result->num_rows > 0) {
         $_SESSION['username'] = $user;
-        header("Location: ../home/welcome.php");
+        header("Location: welcome.php");
         exit();
     } else {
         $error_message = "Invalid username or password.";

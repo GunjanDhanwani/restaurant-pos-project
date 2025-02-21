@@ -2,7 +2,7 @@
 $servername = "localhost";
 $username = "rest_admin";  // WAMP default username
 $password = "rest@123";      // WAMP default password
-$dbname = "restuarant_db";
+$dbname = "restaurant_db";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
