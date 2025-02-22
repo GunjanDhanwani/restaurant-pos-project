@@ -1,79 +1,87 @@
 <?php
 session_start();
-include "database.php"; // Database connection
+include 'database.php'; // Ensure correct DB connection
 
-// If user is already logged in, redirect to welcome page
-if (isset($_SESSION['username'])) {
-    header("Location: welcome.php");
-    exit();
-}
-
-$error_message = "";
+$error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $user = $_POST['username'];
-    $pass = md5($_POST['password']); // ⚠ Use password_hash() in production for security
-
-    // Prepare SQL Query
-    $stmt = $conn->prepare("SELECT * FROM users WHERE username=? AND password=?");
+    $name = mysql_real_escape_string(trim($_POST['name'])); // Username
+    $password = mysql_real_escape_string(trim($_POST['password']));
     
-    if (!$stmt) {
-        die("SQL Error: " . $conn->error);
+    // Encrypt password using md5 (⚠️ Not secure, but required for PHP 5.3.5)
+    $hashed_password = md5($password);
+
+    // Check if user exists
+    $query = "SELECT * FROM users WHERE name = '$name' AND password = '$hashed_password' LIMIT 1";
+    $result = mysql_query($query);
+
+    if (!$result) {
+        die("Query failed: " . mysql_error());
     }
 
-    $stmt->bind_param("ss", $user, $pass);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    if (mysql_num_rows($result) == 1) {
+        $user = mysql_fetch_assoc($result);
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['username'] = $user['name'];
+        $_SESSION['role'] = $user['role'];
 
-    if ($result->num_rows > 0) {
-        $_SESSION['username'] = $user;
-        header("Location: welcome.php");
+        // Redirect based on role
+        if ($user['role'] == "admin") {
+            $_SESSION['admin_logged_in'] = true;
+            header("Location: ../components/admin/dashboard.php");
+        } else {
+            header("Location: welcome.php");
+        }
         exit();
     } else {
-        $error_message = "Invalid username or password.";
+        $error = "Invalid username or password!";
     }
-
-    $stmt->close();
 }
-$conn->close();
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Restaurant POS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../assets/style.css">
 </head>
 <body class="bg-light">
-    <div class="container d-flex justify-content-center align-items-center vh-100">
-        <div class="card shadow p-4" style="width: 350px;">
-            <h3 class="text-center mb-4">Login</h3>
 
-            <?php if ($error_message): ?>
-                <div class="alert alert-danger"><?php echo $error_message; ?></div>
-            <?php endif; ?>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4">
+                <h3 class="text-center">Login</h3>
 
-            <form action="login.php" method="POST">
-                <div class="mb-3">
-                    <label class="form-label">Username</label>
-                    <input type="text" name="username" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Password</label>
-                    <input type="password" name="password" class="form-control" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Login</button>
-            </form>
+                <!-- Display Error Message -->
+                <?php if (!empty($error)): ?>
+                    <div class="alert alert-danger"><?php echo $error; ?></div>
+                <?php endif; ?>
 
-            <p class="mt-3 text-center">
-                Don't have an account? <a href="#">Register</a>
-            </p>
+                <!-- Login Form -->
+                <form action="login.php" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Username (Name):</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Password:</label>
+                        <input type="password" name="password" class="form-control" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+
+                <p class="mt-3 text-center">
+                    Don't have an account? <a href="register.php">Register</a>
+                </p>
+            </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

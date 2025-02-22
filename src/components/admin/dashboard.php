@@ -42,14 +42,14 @@ if (!isset($_SESSION['admin_logged_in'])) {
                     <div class="card-body">
                         <h5 class="card-title">👥 Users</h5>
                         <p class="card-text">Manage customers & admins</p>
-                        <a href="users.php" class="btn btn-success">Manage Users</a>
+                        <a href="manage_users.php" class="btn btn-success">Manage Users</a>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="text-center mt-4">
-            <a href="logout.php" class="btn btn-danger">Logout</a>
+            <a href="../logout.php" class="btn btn-danger">Logout</a>
         </div>
     </div>
 </body>

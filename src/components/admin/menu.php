@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../../config/database.php'; // Connect to database
+include '../database.php'; // Connect to database
 
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: ../login.php");
@@ -8,12 +8,12 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 // Fetch menu items from database
-$result = $conn->query("SELECT * FROM menu_items");
+$result = $conn->query("SELECT * FROM menu");
 
 // Handle item deletion
 if (isset($_POST['delete'])) {
     $id = $_POST['id'];
-    $conn->query("DELETE FROM menu_items WHERE id=$id");
+    $conn->query("DELETE FROM menu WHERE id=$id");
     header("Location: menu.php"); // Refresh page
     exit();
 }

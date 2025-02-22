@@ -1,23 +1,77 @@
+
 <?php
+// session_start();
+// include '../../config/database.php'; // Database connection
+// // Check if cart is empty
+// if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
+//     header("Location: cart_page.php");
+//     exit();
+// }
+
+// // Process order if form is submitted
+// if ($_SERVER["REQUEST_METHOD"] == "POST") {
+//     // Simulate order placement (In real applications, store order in database)
+//     $_SESSION['order_success'] = "Your order has been placed successfully!";
+//     unset($_SESSION['cart']); // Clear the cart
+//     header("Location: order_confirmation.php");
+//     exit();
+// }
+
+// $total_price = 0;
+
 session_start();
+include '../database.php'; // Database connection
 
-// Check if cart is empty
-if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
-    header("Location: cart_page.php");
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
     exit();
 }
 
-// Process order if form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Simulate order placement (In real applications, store order in database)
-    $_SESSION['order_success'] = "Your order has been placed successfully!";
-    unset($_SESSION['cart']); // Clear the cart
-    header("Location: order_confirmation.php");
+if (!isset($_SESSION['cart']) || count($_SESSION['cart']) == 0) {
+    header("Location: ../home/welcome.php");
     exit();
 }
 
+$user_id = $_SESSION['user_id'];
 $total_price = 0;
+
+// Calculate total price
+foreach ($_SESSION['cart'] as $id => $item) {
+    $total_price += $item['price'] * $item['quantity'];
+}
+
+// Insert order
+$query = "INSERT INTO orders (user_id, total_price, status) VALUES ($user_id, $total_price, 'pending')";
+$result = mysql_query($query);
+
+if (!$result) {
+    die("Order creation failed: " . mysql_error());
+}
+
+// Get last inserted order ID
+$order_id = mysql_insert_id();
+
+// Insert each cart item into order_items table
+foreach ($_SESSION['cart'] as $id => $item) {
+    $product_name = mysql_real_escape_string($item['name']);
+    $quantity = $item['quantity'];
+    $price = $item['price'];
+
+    $query = "INSERT INTO order_items (order_id, product_name, quantity, price) 
+              VALUES ($order_id, '$product_name', $quantity, $price)";
+    mysql_query($query);
+}
+
+// Clear cart after checkout
+unset($_SESSION['cart']);
+
+// Redirect to order confirmation
+header("Location: order_confirmation.php?order_id=" . $order_id);
+exit();
+
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
